@@ -7,7 +7,7 @@ export const Product = ({
     <div>
       <h2>{name}</h2>
       <img src={imageURL} alt={name} width="640" />
-      <p>Price: {price} credits</p>
+      <p>Price: {price > 0 && price} credits</p>
     </div>
   );
 };
