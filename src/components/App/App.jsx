@@ -19,6 +19,8 @@ export const App = () => {
   const [articles, setArticles] = useState([]);
   //  оглашаем состояние для лоадера
   const [loading, setLoading] = useState(false);
+  // оглашаем состояние для ошибки
+  const [error, setError] = useState(false);
 
   // Далі потрібно перед HTTP-запитом встановити значення стану loading в true,
   //  а після запиту повернутися в false.
@@ -39,6 +41,8 @@ export const App = () => {
         setArticles(response.data.hits);
       } catch (error) {
         // тут обрабатываем ошибку
+        // ставим состояние в тру если есть ошибка
+        setError(true);
       } finally {
         // 2. Встановлюємо індикатор в false після запиту
         setLoading(false);
@@ -75,6 +79,9 @@ export const App = () => {
           wrapperClass="blocks-wrapper"
           visible={true}
         />
+      )}
+      {error && (
+        <p>Whoops, something went wrong! Please try reloading this page!</p>
       )}
       {articles.length > 0 && <ArticlesList items={articles} />}
       <h2>Task and formik</h2>
