@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 // import reactLogo from "./assets/react.svg";
 // import viteLogo from "/vite.svg";
 // import { Product } from "../Product.jsx";
@@ -6,12 +7,29 @@ import { TaskList } from "../TaskList/TaskList.jsx";
 import { Form } from "../Form/Form.jsx";
 import { Filter } from "../Filter/Filer.jsx";
 import { FeedBackForm } from "../Formik/FeedBackForm.jsx";
+import { ArticlesList } from "../Articles/ArticlesList.jsx";
 import initialTasks from "../../tasks.json";
 import css from "./App.module.css";
 
 export const App = () => {
   const [tasks, setTasks] = useState(initialTasks);
   const [filter, setFilter] = useState("");
+  // 1. Оголошуємо стан
+  const [articles, setArticles] = useState([]);
+
+  // HTTP REQ
+  // запрос выполняется во время монтирования компонента
+  useEffect(() => {
+    async function fetchArticlies() {
+      const response = await axios.get(
+        "https://hn.algolia.com/api/v1/search?query=react"
+      );
+      console.log(response);
+      // 2. Записуємо дані в стан
+      setArticles(response.data.hits);
+    }
+    fetchArticlies();
+  }, []);
 
   const addTask = (newTask) => {
     setTasks((prevTasks) => {
@@ -30,6 +48,9 @@ export const App = () => {
 
   return (
     <div className={css.container}>
+      <h2>Latest articlies</h2>
+      {articles.length > 0 && <ArticlesList items={articles} />}
+      <h2>Task and formik</h2>
       <Form onAdd={addTask} />
       <Filter value={filter} onFilter={setFilter} />
       <TaskList tasks={visibleTasks} onDelete={deleteTask} />
