@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Blocks } from "react-loader-spinner";
+
 // import reactLogo from "./assets/react.svg";
 // import viteLogo from "/vite.svg";
 // import { Product } from "../Product.jsx";
@@ -8,9 +8,12 @@ import { Form } from "../Form/Form.jsx";
 import { Filter } from "../Filter/Filer.jsx";
 import { FeedBackForm } from "../Formik/FeedBackForm.jsx";
 import { ArticlesList } from "../Articles/ArticlesList.jsx";
+import { SearchForm } from "../searchForm/searchForm.jsx";
+import { Error } from "../Error/Error.jsx";
 import initialTasks from "../../tasks.json";
 import { fetchArticlesWitTopic } from "../../services/fetchArticlesWitTopic.js";
 import css from "./App.module.css";
+import { Loader } from "../Loader/Loader.jsx";
 
 export const App = () => {
   const [tasks, setTasks] = useState(initialTasks);
@@ -28,26 +31,41 @@ export const App = () => {
 
   // HTTP REQ
   // запрос выполняется во время монтирования компонента
-  useEffect(() => {
-    async function fetchArticlies() {
-      try {
-        setLoading(true);
-        const data = await fetchArticlesWitTopic("react");
+  // useEffect(() => {
+  //   async function fetchArticlies() {
+  //     try {
+  //       setLoading(true);
+  //       const data = await fetchArticlesWitTopic("react");
 
-        console.log(data);
-        //  Записуємо дані в стан
-        setArticles(data);
-      } catch (error) {
-        // тут обрабатываем ошибку
-        // ставим состояние в тру если есть ошибка
-        setError(true);
-      } finally {
-        // 2. Встановлюємо індикатор в false після запиту
-        setLoading(false);
-      }
+  //       console.log(data);
+  //       //  Записуємо дані в стан
+  //       setArticles(data);
+  //     } catch (error) {
+  //       // тут обрабатываем ошибку
+  //       // ставим состояние в тру если есть ошибка
+  //       setError(true);
+  //     } finally {
+  //       // 2. Встановлюємо індикатор в false після запиту
+  //       setLoading(false);
+  //     }
+  //   }
+  //   fetchArticlies();
+  // }, []);
+
+  // function for search
+  const handleSearch = async (topic) => {
+    try {
+      setArticles([]);
+      setError(false);
+      setLoading(true);
+      const data = await fetchArticlesWitTopic(topic);
+      setArticles(data);
+    } catch (error) {
+      setError(true);
+    } finally {
+      setLoading(false);
     }
-    fetchArticlies();
-  }, []);
+  };
 
   const addTask = (newTask) => {
     setTasks((prevTasks) => {
@@ -67,21 +85,14 @@ export const App = () => {
   return (
     <div className={css.container}>
       <h2>Latest articlies</h2>
-      {loading && (
-        <Blocks
-          height="80"
-          width="80"
-          color="#4fa94d"
-          ariaLabel="blocks-loading"
-          wrapperStyle={{}}
-          wrapperClass="blocks-wrapper"
-          visible={true}
-        />
+      <SearchForm onSearch={handleSearch} />
+      {loading && <Loader />}
+      {error && <Error />}
+      {articles.length > 0 ? (
+        <ArticlesList items={articles} />
+      ) : (
+        <p>Not found match result .. </p>
       )}
-      {error && (
-        <p>Whoops, something went wrong! Please try reloading this page!</p>
-      )}
-      {articles.length > 0 && <ArticlesList items={articles} />}
       <h2>Task and formik</h2>
       <Form onAdd={addTask} />
       <Filter value={filter} onFilter={setFilter} />
