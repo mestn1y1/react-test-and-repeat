@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Blocks } from "react-loader-spinner";
 // import reactLogo from "./assets/react.svg";
 // import viteLogo from "/vite.svg";
@@ -10,6 +9,7 @@ import { Filter } from "../Filter/Filer.jsx";
 import { FeedBackForm } from "../Formik/FeedBackForm.jsx";
 import { ArticlesList } from "../Articles/ArticlesList.jsx";
 import initialTasks from "../../tasks.json";
+import { fetchArticlesWitTopic } from "../../services/fetchArticlesWitTopic.js";
 import css from "./App.module.css";
 
 export const App = () => {
@@ -32,13 +32,11 @@ export const App = () => {
     async function fetchArticlies() {
       try {
         setLoading(true);
-        const response = await axios.get(
-          "https://hn.algolia.com/api/v1/search?query=react"
-        );
+        const data = await fetchArticlesWitTopic("react");
 
-        console.log(response);
+        console.log(data);
         //  Записуємо дані в стан
-        setArticles(response.data.hits);
+        setArticles(data);
       } catch (error) {
         // тут обрабатываем ошибку
         // ставим состояние в тру если есть ошибка
