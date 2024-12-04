@@ -5,6 +5,7 @@ import { useState } from "react";
 import { TaskList } from "../TaskList/TaskList.jsx";
 import { Form } from "../Form/Form.jsx";
 import { Filter } from "../Filter/Filer.jsx";
+import { FeedBackForm } from "../Formik/FeedBackForm.jsx";
 import initialTasks from "../../tasks.json";
 import css from "./App.module.css";
 
@@ -32,6 +33,7 @@ export const App = () => {
       <Form onAdd={addTask} />
       <Filter value={filter} onFilter={setFilter} />
       <TaskList tasks={visibleTasks} onDelete={deleteTask} />
+      <FeedBackForm />
     </div>
   );
 };
