@@ -1,129 +1,35 @@
-import { useState, useEffect } from "react";
-
-// import reactLogo from "./assets/react.svg";
-// import viteLogo from "/vite.svg";
-// import { Product } from "../Product.jsx";
-import { TaskList } from "../TaskList/TaskList.jsx";
-import { Form } from "../Form/Form.jsx";
-import { Filter } from "../Filter/Filer.jsx";
-import { FeedBackForm } from "../Formik/FeedBackForm.jsx";
-import { ArticlesList } from "../Articles/ArticlesList.jsx";
-import { SearchForm } from "../searchForm/searchForm.jsx";
-import { Error } from "../Error/Error.jsx";
-import initialTasks from "../../tasks.json";
-import { fetchArticlesWitTopic } from "../../services/fetchArticlesWitTopic.js";
+import { Routes, Route, NavLink } from "react-router-dom";
+import clsx from "clsx";
 import css from "./App.module.css";
-import { Loader } from "../Loader/Loader.jsx";
+import { About } from "../../Pages/About.jsx";
+import { Home } from "../../Pages/Home.jsx";
+import { NotFound } from "../../Pages/NotFound.jsx";
+import { Products } from "../../Pages/Products.jsx";
 
 export const App = () => {
-  const [tasks, setTasks] = useState(initialTasks);
-  const [filter, setFilter] = useState("");
-  //  Оголошуємо стан
-  const [articles, setArticles] = useState([]);
-  //  оглашаем состояние для лоадера
-  const [loading, setLoading] = useState(false);
-  // оглашаем состояние для ошибки
-  const [error, setError] = useState(false);
-
-  // Далі потрібно перед HTTP-запитом встановити значення стану loading в true,
-  //  а після запиту повернутися в false.
-  //  Для цього у асинхронній функції використовуємо try...catch.
-
-  // HTTP REQ
-  // запрос выполняется во время монтирования компонента
-  // useEffect(() => {
-  //   async function fetchArticlies() {
-  //     try {
-  //       setLoading(true);
-  //       const data = await fetchArticlesWitTopic("react");
-
-  //       console.log(data);
-  //       //  Записуємо дані в стан
-  //       setArticles(data);
-  //     } catch (error) {
-  //       // тут обрабатываем ошибку
-  //       // ставим состояние в тру если есть ошибка
-  //       setError(true);
-  //     } finally {
-  //       // 2. Встановлюємо індикатор в false після запиту
-  //       setLoading(false);
-  //     }
-  //   }
-  //   fetchArticlies();
-  // }, []);
-
-  // function for search
-  const handleSearch = async (topic) => {
-    try {
-      setArticles([]);
-      setError(false);
-      setLoading(true);
-      const data = await fetchArticlesWitTopic(topic);
-      setArticles(data);
-    } catch (error) {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
+  const buildLinkClass = ({ isActive }) => {
+    return clsx(css.link, isActive && css.active);
   };
-
-  const addTask = (newTask) => {
-    setTasks((prevTasks) => {
-      return [...prevTasks, newTask];
-    });
-  };
-  const deleteTask = (taskId) => {
-    setTasks((prevTasks) => {
-      return prevTasks.filter((task) => task.id !== taskId);
-    });
-  };
-
-  const visibleTasks = tasks.filter((task) =>
-    task.text.toLowerCase().includes(filter.toLowerCase())
-  );
-
   return (
-    <div className={css.container}>
-      <h2>Latest articlies</h2>
-      <SearchForm onSearch={handleSearch} />
-      {loading && <Loader />}
-      {error && <Error />}
-      {articles.length > 0 ? (
-        <ArticlesList items={articles} />
-      ) : (
-        <p>Not found match result .. </p>
-      )}
-      <h2>Task and formik</h2>
-      <Form onAdd={addTask} />
-      <Filter value={filter} onFilter={setFilter} />
-      <TaskList tasks={visibleTasks} onDelete={deleteTask} />
-      <FeedBackForm />
+    <div>
+      <nav className={css.nav}>
+        <NavLink to="/" className={buildLinkClass}>
+          Home
+        </NavLink>
+        <NavLink to="/about" className={buildLinkClass}>
+          About
+        </NavLink>
+        <NavLink to="/products" className={buildLinkClass}>
+          Products
+        </NavLink>
+      </nav>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </div>
   );
 };
-
-// export const App = () => {
-//   return (
-//     <div>
-//       <h1>Best selling</h1>
-//       <Product
-//         name="Tacos with lime"
-//         imageURL="https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?dpr=2&h=480&w=640"
-//         price={10.99}
-//       />
-//       <Product
-//         name="Fries and burger"
-//         imageURL="https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg?dpr=2&h=480&w=640"
-//         price={14.29}
-//       />
-//       <Product />
-//     </div>
-//   );
-// };
-// components
-// Ім'я компонента обов'язково повинно починатися з великої літери.
-// Назви компонентів з маленької літери зарезервовані для HTML - елементів.
-// Якщо ви спробуєте назвати компонент product, а не Product, під час рендеру React проігнорує його та відрендерить тег < product ></ >.
-
-// props
-// Пропси використовуються для передачі динамічних значень для компонента, наприклад, для використання в JSX-розмітці, використовуючи синтаксис {}.
